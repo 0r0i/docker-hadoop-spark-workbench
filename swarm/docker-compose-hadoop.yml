@@ -21,7 +21,7 @@ services:
       #    - node.hostname == master.node.com
       labels:
         traefik.docker.network: workbench
-        traefik.port: 50070
+        traefik.port: '50070'
 
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
@@ -40,7 +40,7 @@ services:
         condition: on-failure
       labels:
         traefik.docker.network: workbench
-        traefik.port: 50075
+        traefik.port: '50075'
 
 volumes:
   datanode:

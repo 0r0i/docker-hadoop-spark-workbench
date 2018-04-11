@@ -25,6 +25,27 @@ ping namenode.local.host
 
 ## Initial setup
 
+Make some preparations. Check docker-compose version:
+```
+docker-compose -v
+```
+and upgrade docker-compose to 1.20.0 version if needed. To upgrade we need:
+
+step1:
+$which docker-compose
+/usr/bin/docker-compose
+
+step2:
+$sudo rm /usr/bin/docker-compose
+
+step3:
+curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+
+step4:
+chmod +x /usr/bin/docker-compose
+
+And make sure that correct version exists
+
 Create an overlay network:
 ```
 make network

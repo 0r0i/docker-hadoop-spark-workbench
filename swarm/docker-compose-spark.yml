@@ -11,7 +11,7 @@ services:
         condition: on-failure
       labels:
         traefik.docker.network: workbench
-        traefik.port: 8080
+        traefik.port: '8080'
     env_file:
       - ./hadoop.env
 
@@ -27,7 +27,7 @@ services:
         condition: on-failure
       labels:
         traefik.docker.network: workbench
-        traefik.port: 8081
+        traefik.port: '8081'
     env_file:
       - ./hadoop.env
 

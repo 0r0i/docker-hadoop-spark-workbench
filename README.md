@@ -1,49 +1,101 @@
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/docker-hadoop-spark-workbench)
+# Running Hadoop and Spark in Swarm cluster
 
-# How to use HDFS/Spark Workbench
+## Setup dnsmasq for local deployment
 
-To start an HDFS/Spark Workbench:
+dnsmasq in required for local traefik setup. When deploying on real swarm cluster, this step is unnecessary, simply modify traefik setup to use your registered domain name.
+
+Install dnsmasq:
+
 ```
-    docker-compose up -d
-```
-
-docker-compose does not work to scale up spark-workers, for distributed setup see [swarm folder](./swarm) 
-
-## Starting workbench with Hive support
-
-Before starting the next command, check that the previous service is running correctly (with docker logs servicename).
-```
-docker-compose -f docker-compose-hive.yml up -d namenode hive-metastore-postgresql
-docker-compose -f docker-compose-hive.yml up -d datanode hive-metastore
-docker-compose -f docker-compose-hive.yml up -d hive-server
-docker-compose -f docker-compose-hive.yml up -d spark-master spark-worker spark-notebook hue
+sudo apt-get install dnsmasq
 ```
 
-## Interfaces
+Inject local.host domain into dnsmasq and restart the service:
 
-* Namenode: http://localhost:50070
-* Datanode: http://localhost:50075
-* Spark-master: http://localhost:8080
-* Spark-notebook: http://localhost:9001
-* Hue (HDFS Filebrowser): http://localhost:8088/home
-
-## Important
-
-When opening Hue, you might encounter ```NoReverseMatch: u'about' is not a registered namespace``` error after login. I disabled 'about' page (which is default one), because it caused docker container to hang. To access Hue when you have such an error, you need to append /home to your URI: ```http://docker-host-ip:8088/home```
-
-## Docs
-* [Motivation behind the repo and an example usage @BDE2020 Blog](http://www.big-data-europe.eu/scalable-sparkhdfs-workbench-using-docker/)
-
-## Count Example for Spark Notebooks
 ```
-val spark = SparkSession
-  .builder()
-  .appName("Simple Count Example")
-  .getOrCreate()
-
-val tf = spark.read.textFile("/data.csv")
-tf.count()
+echo "address=/local.host/127.0.0.1" | sudo tee /etc/dnsmasq.d/workbench.conf
+sudo systemctl restart dnsmasq
 ```
 
-## Maintainer
-* Ivan Ermilov @earthquakesan
+Check that it worked (both pings should work, resolves to 127.0.0.1):
+```
+ping local.host
+ping namenode.local.host
+```
+
+## Initial setup
+
+Make some preparations. Check docker-compose version:
+```
+docker-compose -v
+```
+and upgrade docker-compose to 1.20.0 version if needed. To upgrade we need:
+
+step1:
+$which docker-compose
+/usr/bin/docker-compose
+
+step2:
+$sudo rm /usr/bin/docker-compose
+
+step3:
+curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+
+step4:
+chmod +x /usr/bin/docker-compose
+
+And make sure that correct version exists
+
+Create an overlay network:
+```
+make network
+```
+
+Deploy traefik:
+```
+make traefik
+```
+
+Now navigate to localhost:8080 (or yourserver:8080) and check that traefik is running.
+
+## Deploying HDFS (without YARN)
+
+There is no need to explicitly pull the images, however doing it this way you can see the download progress.
+In case of multiple server deployment, if you pull only on your swarm manager, the images still need to be pulled on other nodes.
+Pull the images:
+```
+docker-compose -f docker-compose-hadoop.yml pull
+```
+
+To deploy HDFS run:
+```
+make hadoop
+```
+
+Go to traefik again and check if hadoop is running, copy/paste generated domain name into browser and check if namenode/datanode is working as well.
+
+## Deploying Spark
+
+Pull the images:
+```
+docker-compose -f docker-compose-spark.yml pull
+```
+
+Deploy Spark:
+```
+make spark
+```
+
+## Deploying Apache Zeppelin and HDFS Filebrowser
+
+Pull the images:
+```
+docker-compose -f docker-compose-services.yml pull
+```
+
+Deploy the services:
+```
+make services
+```
+
+Navigate to traefik and go to HDFS Filebrowser/Apache Zeppelin from there.
