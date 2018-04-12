@@ -15,19 +15,19 @@ A DigitalOcean API token for creating droplets for cluster.
 Docker Machine installed on your local computer, which you'll use to create three hosts.
 
 # Step 1 — Provisioning the Cluster Nodes
-We need to create several Docker hosts for our cluster. As a refresher, the following command provisions a single Dockerized host, where $DOTOKEN is an environment variable that evaluates to your DigitalOcean API token:
+We need to create several Docker hosts for our cluster. As a refresher, the following command provisions a single Dockerized host, where $DOTOKEN is an environment variable that evaluates to your DigitalOcean API token (Add that before creating droplets to your environments):
 ```
 docker-machine create --driver digitalocean --digitalocean-image ubuntu-16-04-x64 --digitalocean-access-token $DOTOKEN machine-name
 ```
 Imagine having to do that to set up a cluster made up of at least three nodes, provisioning one host at a time.
-
 We can automate the process of provisioning any number of Docker hosts using this command, combined with some simple Bash scripting. Execute this command on your local machine to create three Docker hosts, named node-1, node-2, and node-3:
 
 ```
 $ for i in 1 2 3; do docker-machine create --driver digitalocean \
-$ --digitalocean-image  ubuntu-16-04-x64 \
+$ --digitalocean-image ubuntu-16-04-x64 --digitalocean-region ams3 \
 $ --digitalocean-access-token $DOTOKEN node-$i; done
 ```
+Key --digitalocean-region optional and default = nyc3
 After the command has completed successfully, you can verify that all the machines have been created by visiting your DigitalOcean dashboard, or by typing the following command:
 ```
 docker-machine ls
@@ -60,8 +60,8 @@ ufw allow 2377/tcp
 ufw allow 7946/tcp
 ufw allow 7946/udp
 ufw allow 4789/udp
-ufw reload
 ufw enable
+ufw reload
 systemctl restart docker
 ```
 
@@ -72,8 +72,8 @@ ufw allow 2376/tcp
 ufw allow 7946/tcp 
 ufw allow 7946/udp 
 ufw allow 4789/udp 
-ufw reload
 ufw enable
+ufw reload
 systemctl restart docker
 ```
 
@@ -136,31 +136,13 @@ If port 8080 is already in use on your host (as in our case), you can specify e.
 ```
 docker service create --name=viz --publish=8888:8080 --constraint=node.role==manager --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock dockersamples/visualizer
 ```
+On manager node clone repo:
+```
+git clone https://github.com/big-data-europe/docker-hadoop-spark-workbench.git
+cd docker-hadoop-spark-workbench
+```
 
 # Running Hadoop and Spark in Swarm cluster
-
-## Setup dnsmasq for local deployment
-
-dnsmasq in required for local traefik setup. When deploying on real swarm cluster, this step is unnecessary, simply modify traefik setup to use your registered domain name.
-
-Install dnsmasq:
-
-```
-sudo apt-get install dnsmasq
-```
-
-Inject local.host domain into dnsmasq and restart the service:
-
-```
-echo "address=/local.host/127.0.0.1" | sudo tee /etc/dnsmasq.d/workbench.conf
-sudo systemctl restart dnsmasq
-```
-
-Check that it worked (both pings should work, resolves to 127.0.0.1):
-```
-ping local.host
-ping namenode.local.host
-```
 
 ## Initial setup
 
@@ -189,6 +171,10 @@ Set necessary rights to executable file:
 ```
 chmod +x /usr/bin/docker-compose
 ```
+Install make utility if needed
+```
+apt install make
+```
 
 Create an overlay network:
 ```
@@ -200,7 +186,7 @@ Deploy traefik:
 make traefik
 ```
 
-Now navigate to localhost:8080 (or yourserver:8080) and check that traefik is running.
+Now navigate to <yourserver_ip>:8080 and check that traefik is running and <yourserver_ip>:8888 for viz service
 
 ## Deploying HDFS (without YARN)
 

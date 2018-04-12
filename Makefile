@@ -3,7 +3,7 @@ network:
 
 traefik:
 	# add --constraint node.hostname==frontend.com to deploy on particular server
-	docker service create --name traefik --publish 80:80 --publish 8080:8080 --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock --network workbench traefik --docker --docker.swarmmode --docker.domain=local.host --docker.watch --web --logLevel=DEBUG
+	docker service create --name traefik --publish 80:80 --publish 8080:8080 --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock --constraint node.role==manager --network workbench traefik --docker --docker.swarmmode --docker.domain=local.host --docker.watch --web --logLevel=DEBUG
 
 hadoop:
 	docker stack deploy -c docker-compose-hadoop.yml hadoop
