@@ -122,6 +122,7 @@ This node joined a swarm as a worker.
 ```
 Log out of node-2, and then repeat this process with node-3 to add it to your cluster.
 You have now added two worker nodes to the cluster. If the firewall rules were configured correctly, you now have a functioning Docker Swarm, with all the nodes synchronized.
+# Step 5 — Deploy on created Cluster
 
 To register your swarm at cloud.docker.com we need to run proxy container on the manager node
 ```
@@ -145,9 +146,7 @@ git clone https://github.com/big-data-europe/docker-hadoop-spark-workbench.git
 cd docker-hadoop-spark-workbench
 ```
 
-# Running Hadoop and Spark in Swarm cluster
-
-## Initial setup
+# Step 6 - Running Hadoop and Spark in Swarm cluster
 
 Make some preparations. Check docker-compose version:
 ```
@@ -191,7 +190,7 @@ make traefik
 
 Now navigate to <yourserver_ip>:8080 and check that traefik is running and <yourserver_ip>:8888 for viz service
 
-## Deploying HDFS (without YARN)
+# Step 7 - Deploying HDFS (without YARN)
 
 There is no need to explicitly pull the images, however doing it this way you can see the download progress.
 In case of multiple server deployment, if you pull only on your swarm manager, the images still need to be pulled on other nodes.
@@ -207,7 +206,7 @@ make hadoop
 
 Go to traefik again and check if hadoop is running, copy/paste generated domain name into browser and check if namenode/datanode is working as well.
 
-## Deploying Spark
+# Step 8 - Deploying Spark
 
 Pull the images:
 ```
@@ -219,7 +218,7 @@ Deploy Spark:
 make spark
 ```
 
-## Deploying Apache Zeppelin and HDFS Filebrowser
+# Step 9 - Deploying Apache Zeppelin and HDFS Filebrowser
 
 Pull the images:
 ```
@@ -232,6 +231,8 @@ make services
 ```
 
 Navigate to traefik and go to HDFS Filebrowser/Apache Zeppelin from there.
+
+# Step 10 - Hints
 
 Træfik is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy. Træfik integrates with your existing infrastructure components (Docker, Swarm mode, Kubernetes, Marathon, Consul, Etcd, Rancher, Amazon ECS, ...) and configures itself automatically and dynamically. Telling Træfik where your orchestrator is could be the only configuration step you need to do.
 
