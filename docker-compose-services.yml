@@ -9,6 +9,7 @@ services:
       SPARK_MASTER: "spark://spark-master:7077"
       MASTER: "spark://spark-master:7077"
       SPARK_SUBMIT_OPTIONS: ""
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
     env_file:
       - ./hadoop.env
     deploy:

@@ -128,8 +128,9 @@ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock dockercloud/reg
 Then type name of the swarm cluster into your namespace in format <username>/<clustername>
 After successful execution command above we can connect to our swarm from docker client from local machine.
 
-On next step after creating swarm cluster we will install demo container that displays Docker services running on a Docker Swarm in a diagram.
-Example:
+On next step after creating swarm cluster we will install demo container that displays Docker
+services running on a Docker Swarm in a diagram. Example:
+
 ![alt text](img/docker-swarm-viz.PNG)
 
 If port 8080 is already in use on your host (as in our case), you can specify e.g. -p [YOURPORT]:8080 instead. Example public port 8888:
@@ -229,3 +230,32 @@ make services
 ```
 
 Navigate to traefik and go to HDFS Filebrowser/Apache Zeppelin from there.
+
+Træfik is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy. Træfik integrates with your existing infrastructure components (Docker, Swarm mode, Kubernetes, Marathon, Consul, Etcd, Rancher, Amazon ECS, ...) and configures itself automatically and dynamically. Telling Træfik where your orchestrator is could be the only configuration step you need to do.
+
+![alt text](img/architecture.PNG)
+
+Traefik uses HTTP header 'Host' for routing requests to frontends(see traefik landing page)
+
+![alt text](img/traefik_start_page.PNG)
+
+After configure DNS you can access services on docker swarm via browser, for example you can config hosts file (Windows) like there:
+```
+<swarm_node_ip>   hadoop-namenode.local.host
+<swarm_node_ip>   hadoop-datanode.local.host
+<swarm_node_ip>   services-hue.local.host
+<swarm_node_ip>   services-zeppelin.local.host
+<swarm_node_ip>   spark-spark-master.local.host
+<swarm_node_ip>   spark-spark-worker.local.host
+```
+and open links in browser
+
+While accessing HUE utility we will faced with known issue https://github.com/big-data-europe/docker-hadoop-spark-workbench/issues/9 and after login we need type http://<services-hue.local.host>/home and:
+
+![alt text](img/hue_page.PNG)
+
+
+
+
+
+
