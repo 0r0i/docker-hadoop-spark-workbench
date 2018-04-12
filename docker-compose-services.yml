@@ -9,7 +9,6 @@ services:
       SPARK_MASTER: "spark://spark-master:7077"
       MASTER: "spark://spark-master:7077"
       SPARK_SUBMIT_OPTIONS: ""
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
     env_file:
       - ./hadoop.env
     deploy:
@@ -19,7 +18,7 @@ services:
         condition: on-failure
       labels:
         traefik.docker.network: workbench
-        traefik.port: 8080
+        traefik.port: '8080'
     networks:
       - workbench
 
@@ -32,7 +31,7 @@ services:
         condition: on-failure
       labels:
         traefik.docker.network: workbench
-        traefik.port: 8088
+        traefik.port: '8088'
     environment:
       - NAMENODE_HOST=namenode
     networks:

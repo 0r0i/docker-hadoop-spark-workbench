@@ -28,6 +28,8 @@ $ --digitalocean-image ubuntu-16-04-x64 --digitalocean-region ams3 \
 $ --digitalocean-access-token $DOTOKEN node-$i; done
 ```
 Key --digitalocean-region optional and default = nyc3
+Key --digitalocean-size optional and default = s-1vcpu-1gb
+For correct work zeppelin one of the node must have 2gb ram (--digitalocean-size s-1vcpu-2gb)
 After the command has completed successfully, you can verify that all the machines have been created by visiting your DigitalOcean dashboard, or by typing the following command:
 ```
 docker-machine ls
@@ -233,7 +235,7 @@ Navigate to traefik and go to HDFS Filebrowser/Apache Zeppelin from there.
 
 Træfik is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy. Træfik integrates with your existing infrastructure components (Docker, Swarm mode, Kubernetes, Marathon, Consul, Etcd, Rancher, Amazon ECS, ...) and configures itself automatically and dynamically. Telling Træfik where your orchestrator is could be the only configuration step you need to do.
 
-![alt text](img/architecture.PNG)
+![alt text](img/architecture.png)
 
 Traefik uses HTTP header 'Host' for routing requests to frontends(see traefik landing page)
 
@@ -253,6 +255,7 @@ and open links in browser
 While accessing HUE utility we will faced with known issue https://github.com/big-data-europe/docker-hadoop-spark-workbench/issues/9 and after login we need type http://<services-hue.local.host>/home and:
 
 ![alt text](img/hue_page.PNG)
+
 
 
 
